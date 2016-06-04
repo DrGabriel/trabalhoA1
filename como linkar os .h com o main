@@ -1,0 +1,7 @@
+primeiro deve-se compilar o arquivo objeto de cada biblioteca
+ex: gcc -c node.c -o node.o
+    gcc -c main.c -o main.o
+
+logo após criar o arquivo objeto de todas as bibliotecas deve-se linkar eles
+
+ex: gcc -O3 main.o node.o -o executavel
