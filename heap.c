@@ -1,11 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include "heap.h"
+#include <papi.h>
+#include <time.h>
 
 
 HEAP *new_heap(int size){
-	HEAP *heap = (HEAP*) malloc(sizeof(HEAP));
-	heap->nums = malloc(sizeof(int) * size);
+	HEAP *heap;
+	posix_memalign((void**)&heap,64,sizeof(HEAP));
+	posix_memalign((void**)&heap->nums,64,sizeof(long)*size);
 	if(heap != NULL && heap->nums !=NULL){
 		heap->end = -1;
 
@@ -20,7 +23,7 @@ int empty_heap(HEAP *heap){
 }
 
 void swap(HEAP * heap, int actual, int new_pos){
-	int tmp = heap->nums[actual];
+	long tmp = heap->nums[actual];
 	heap->nums[actual] = heap->nums[new_pos];
 	heap->nums[new_pos] = tmp;
 }
@@ -56,15 +59,15 @@ void perc_down(HEAP *heap){
 	}
 }
 
-void heap_push(HEAP *heap, int num){
+void heap_push(HEAP *heap, long num){
 	heap->end++;
 	heap->nums[heap->end] = num;
 	perc_up(heap);
 }
 
-int heap_pop(HEAP *heap){
+long heap_pop(HEAP *heap){
 	if(!empty_heap(heap)){
-		int num = heap->nums[0];
+		long num = heap->nums[0];
 		heap->nums[0] = heap->nums[heap->end];
 		heap->end--;
 		if(!empty_heap(heap))
@@ -80,7 +83,7 @@ int heap_pop(HEAP *heap){
 void printHeap(HEAP * heap){
 	int i;
 	for(i=0; i<= heap->end;i++){
-		printf("%d ",heap->nums[i]);
+		printf("%li ",heap->nums[i]);
 	}
 	printf("\n");
 }
@@ -89,7 +92,7 @@ void heapSort(HEAP *heap){
 	int tempSize = heap->end;
 
 	while(!empty_heap(heap)){
-		int tempNum = heap_pop(heap);
+		long tempNum = heap_pop(heap);
 		heap->nums[heap->end + 1] = tempNum;
 	}
 	heap->end = tempSize;
