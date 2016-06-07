@@ -92,7 +92,7 @@ int main(){
       		ERROR_RETURN(retval);
 
    	printf("Read successfully\n");
-   	printf("The total FLOPS for heapsort of size %d are:\n ----- %lld ---- \n",TAM,values[0]);
+   	printf("The total FLOPS for heapsort of size %d are:\n ----- %lld ---- \n",tamanho,values[0]);
    	printf("The total cycles used are: \n ----- %lld ---- \n", values[1] );
    	printf("+----------------------------------------------------------------+\n");
    	printf("Wall clock cycles: %lld\n", end_cycles - start_cycles);
