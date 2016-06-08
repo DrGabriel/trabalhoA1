@@ -3,8 +3,7 @@
 
 
 void bubbleSort(long *nums,int size){
-	int i,j;
-	long temp;
+	int i,j,temp;
 	for(i=0; i<size; i++){
 		for(j=0;j<(size- i - 1);j++){
 			if(nums[j]>nums[j+1]){

@@ -13,7 +13,8 @@
 #define ERROR_RETURN(retval) { fprintf(stderr, "Error %d %s:line %d: \n", retval,__FILE__,__LINE__);  exit(retval); }
 
 int main(){
-
+    int i,counter;
+    FILE *saidaArray = fopen("saidaArray.txt","w");
     long_long start_cycles, end_cycles, start_usec, end_usec;
     srand(time(NULL));
     /*Declaring and initializing the event set with the presets*/
@@ -50,62 +51,73 @@ int main(){
    printf("There are %d counters in this system\n",num_hwcntrs);
 
 
-  int tamanho = (pow(2,TAM))/sizeof(long);
-	HEAP * heap = new_heap(tamanho);
-  long *arr = geraArrayAleatorio(tamanho);
-  insereHeap(tamanho,arr,heap);
+   int tamanho = (pow(2,TAM))/sizeof(long);
+   long *arr = geraArrayAleatorio(tamanho);
 
+   fprintf(saidaArray, "ARRAY ALEATORIO NAO ORDENADO:\n");
+   for(i=0;i<tamanho;i++)
+       fprintf(saidaArray,"%li ",arr[i]);
 
-	printHeap(heap);
-	/**************************************************************************
-    	* PAPI_start_counters initializes the PAPI library (if necessary) and    *
-    	* starts counting the events named in the events array. This function    *
-   	* implicitly stops and initializes any counters running as a result of   *
-    	* a previous call to PAPI_start_counters.                                *
-    	**************************************************************************/
-
+  for(counter = 0; counter <10; counter ++){
+      /**************************************************************************
+      * PAPI_start_counters initializes the PAPI library (if necessary) and    *
+      * starts counting the events named in the events array. This function    *
+      * implicitly stops and initializes any counters running as a result of   *
+      * a previous call to PAPI_start_counters.                                *
+      **************************************************************************/
+    HEAP * heap = new_heap(tamanho);
+    insereHeap(tamanho,arr,heap);
     printf("\nCounter Started: \n");
-   if ( (retval = PAPI_start_counters(Events, NUM_EVENTS)) != PAPI_OK)
+
+    if ( (retval = PAPI_start_counters(Events, NUM_EVENTS)) != PAPI_OK)
        ERROR_RETURN(retval);
 
 
+    /* Gets the starting time in clock cycles */
+    start_cycles = PAPI_get_real_cyc();
 
-   	/* Gets the starting time in clock cycles */
-   	start_cycles = PAPI_get_real_cyc();
+    /* Gets the starting time in microseconds */
+      start_usec = PAPI_get_real_usec();
 
-   	/* Gets the starting time in microseconds */
-    	start_usec = PAPI_get_real_usec();
-
-	   heapSort(heap);
-
-
-	/**********************************************************************
-    	* PAPI_read_counters reads the counter values into values array      *
-    	**********************************************************************/
-    	/* Gets the ending time in clock cycles */
-    	end_cycles = PAPI_get_real_cyc();
-
-    	/* Gets the ending time in microseconds */
-   	end_usec = PAPI_get_real_usec();
-
-   	if ( (retval=PAPI_read_counters(values, NUM_EVENTS)) != PAPI_OK)
-      		ERROR_RETURN(retval);
-
-   	printf("Read successfully\n");
-   	printf("The total FLOPS for heapsort of size %d are:\n ----- %lld ---- \n",tamanho,values[0]);
-   	printf("The total cycles used are: \n ----- %lld ---- \n", values[1] );
-   	printf("+----------------------------------------------------------------+\n");
-   	printf("Wall clock cycles: %lld\n", end_cycles - start_cycles);
-   	printf("+----------------------------------------------------------------+\n");
-   	printf(" | Wall clock time in microseconds: %lld |\n", (end_usec - start_usec));
-   	printf("+----------------------------------------------------------------+\n");
+     heapSort(heap);
 
 
-    	/******************* PAPI_stop_counters **********************************/
-   	if ((retval=PAPI_stop_counters(values, NUM_EVENTS)) != PAPI_OK)
-      		ERROR_RETURN(retval);
+  /**********************************************************************
+      * PAPI_read_counters reads the counter values into values array      *
+      **********************************************************************/
+      /* Gets the ending time in clock cycles */
+      end_cycles = PAPI_get_real_cyc();
 
-	printHeap(heap);
+      /* Gets the ending time in microseconds */
+    end_usec = PAPI_get_real_usec();
+
+    if ( (retval=PAPI_read_counters(values, NUM_EVENTS)) != PAPI_OK)
+          ERROR_RETURN(retval);
+
+    printf("Read successfully\n");
+    printf("The total FLOPS for heapsort of size %d are:\n ----- %lld ---- \n",TAM,values[0]);
+    printf("The total cycles used are: \n ----- %lld ---- \n", values[1] );
+    printf("+----------------------------------------------------------------+\n");
+    printf("Wall clock cycles: %lld\n", end_cycles - start_cycles);
+    printf("+----------------------------------------------------------------+\n");
+    printf(" | Wall clock time in microseconds: %lld |\n", (end_usec - start_usec));
+    printf("+----------------------------------------------------------------+\n");
+
+
+      /******************* PAPI_stop_counters **********************************/
+    if ((retval=PAPI_stop_counters(values, NUM_EVENTS)) != PAPI_OK)
+        ERROR_RETURN(retval);
+    if(counter==9){
+        fprintf(saidaArray, "\nARRAY ALEATORIO ORDENADO:\n");
+        for(i=0;i<tamanho;i++)
+          fprintf(saidaArray,"%li ",heap->nums[i]);
+    }
+    free(heap->nums);
+    free(heap);
+
+  }
+
+
 
 	return 0;
 }
