@@ -6,7 +6,7 @@
 #include "inputoutput.h"
 
 
-long* geraArrayAleatorio(int tamanho){//Sendo n ao tamanho do array q eh potencia de 2^n/sizeof(long)
+long* geraArrayAleatorio(int tamanho){//Sendo n a potencia de 2^n
 	long *arrayAleatorio;
 	
 	posix_memalign((void**)&arrayAleatorio,64,tamanho*sizeof(long));
@@ -24,3 +24,7 @@ void insereHeap(int tam,long * arrayAleatorio,HEAP *heap){
 		heap_push(heap,arrayAleatorio[i]);
 	}
 }
+
+
+
+
